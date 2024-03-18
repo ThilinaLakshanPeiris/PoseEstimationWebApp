@@ -1,0 +1,236 @@
+https://www.mysqltutorial.org/mysql-triggers/mysql-after-update-trigger/
+
+----Delete Incomming Fuel Data---
+	DELIMITER $$
+
+	CREATE TRIGGER delete_incomming_fuel
+		AFTER DELETE
+		ON `test_api_incomingfuel` FOR EACH ROW
+		BEGIN
+		
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` - old.`incoming_fuel_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`region_id_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`depot_id_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			DELETE FROM `test_api_transaction`
+			WHERE `test_api_transaction`.`ref_id`=old.`incoming_fuel_id`
+			AND `test_api_transaction`.`transaction_type`='Incomming';
+		END
+
+	$$    
+
+	DELIMITER ;
+----Delete Incomming Fuel Data---
+
+----DELETE STC Vehicle Dis DATA---
+	DELIMITER $$
+
+	CREATE TRIGGER delete_stc_vehicle_distribution
+		AFTER DELETE
+		ON `test_api_stcvehicledistribution` FOR EACH ROW
+		BEGIN
+		
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`stc_dis_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			DELETE FROM `test_api_transaction`
+			WHERE `test_api_transaction`.`ref_id`=old.`stc_id`
+			AND `test_api_transaction`.`transaction_type`='stc_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+----DELETE STC Vehicle Dis DATA---
+
+----DELETE Other Institute Dis DATA---
+	DELIMITER $$
+
+	CREATE TRIGGER delete_other_institute_distribution
+		AFTER DELETE
+		ON `test_api_otherdistribution` FOR EACH ROW
+		BEGIN
+		
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`other_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			DELETE FROM `test_api_transaction`
+			WHERE `test_api_transaction`.`ref_id`=old.`other_id`
+			AND `test_api_transaction`.`transaction_type`='other_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+----DELETE Other Institute Dis DATA---
+
+----DELETE Contractor Dis DATA---
+	DELIMITER $$
+
+	CREATE TRIGGER delete_contractor_distribution
+		AFTER DELETE
+		ON `test_api_contractordistribution` FOR EACH ROW
+		BEGIN
+		
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`contractor_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			DELETE FROM `test_api_transaction`
+			WHERE `test_api_transaction`.`ref_id`=old.`contractor_id`
+			AND `test_api_transaction`.`transaction_type`='contractor_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+----DELETE Contractor Dis DATA---
+
+----Update Incomming Fuel Data---
+	DELIMITER $$
+
+	CREATE TRIGGER update_incomming_fuel
+		AFTER UPDATE
+		ON `test_api_incomingfuel` FOR EACH ROW
+		BEGIN
+		
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` - old.`incoming_fuel_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`region_id_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`depot_id_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + new.`incoming_fuel_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`region_id_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`depot_id_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=new.`pump_type_id_id`;
+			
+			UPDATE `test_api_transaction`
+			SET `fuel_amount`=new.`amount`,`transaction_date`=new.`incoming_fuel_date`,`transaction_rate`=new.`unit_price`,
+				`pump_type_id_id`=new.`pump_type_id_id`,`qty`=new.`incoming_fuel_qty`,`total`=new.`total`,`transport_cost`=new.`transport_cost`,
+				`invoice_no`=new.`invoice_no`
+			WHERE `test_api_transaction`.`ref_id`=old.`incoming_fuel_id`
+			AND `test_api_transaction`.`transaction_type`='Incomming';
+		END
+
+	$$    
+
+	DELIMITER ;
+----Update Incomming Fuel Data---
+	
+----Update STC Vehicle Data---
+
+	DELIMITER $$
+
+	CREATE TRIGGER update_stc_vehicle_dist
+		AFTER UPDATE
+		ON `test_api_stcvehicledistribution` FOR EACH ROW
+		BEGIN
+	
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`stc_dis_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` -  new.`stc_dis_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=new.`pump_type_id_id`;
+		
+			UPDATE `test_api_transaction`
+			SET `fuel_amount`=new.`stc_other_amount`,`transaction_date`=new.`stc_enter_date`,`transaction_rate`=new.`stc_rate`,
+				`pump_type_id_id`=new.`pump_type_id_id`,`qty`=new.`stc_dis_qty`,`total`=new.`stc_other_amount`,`transport_cost`=0.00,
+				`invoice_no`=new.`issue_order_no`
+			WHERE `test_api_transaction`.`ref_id`=old.`stc_id`
+			AND `test_api_transaction`.`transaction_type`='stc_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+
+----Update STC Vehicle Data---
+
+----Update Other Institute Data---
+
+	DELIMITER $$
+
+	CREATE TRIGGER update_other_institute_vehicle_dist
+		AFTER UPDATE
+		ON `test_api_otherdistribution` FOR EACH ROW
+		BEGIN
+	
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`other_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` - new.`other_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=new.`pump_type_id_id`;
+		
+			UPDATE `test_api_transaction`
+			SET `fuel_amount`=new.`other_amount`,`transaction_date`=new.`enter_date`,`transaction_rate`=new.`other_rate`,
+				`pump_type_id_id`=new.`pump_type_id_id`,`qty`=new.`other_qty`,`total`=new.`other_amount` + new.`handling_charge`,`transport_cost`=new.`handling_charge`,
+				`invoice_no`=new.`issue_order_no`
+			WHERE `test_api_transaction`.`ref_id`=old.`other_id`
+			AND `test_api_transaction`.`transaction_type`='other_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+
+----Update Other Institute Data---
+
+----Update Contractor Dis Data---
+
+	DELIMITER $$
+
+	CREATE TRIGGER update_contractor_vehicle_dist
+		AFTER UPDATE
+		ON `test_api_contractordistribution` FOR EACH ROW
+		BEGIN
+	
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` + old.`contractor_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=old.`pump_type_id_id`;
+			
+			UPDATE `test_api_mainstock` 
+			SET `available_stock` = `available_stock` - new.`contractor_qty`
+			WHERE `test_api_mainstock`.`region_id_id`=old.`en_reg_id` AND 
+			`test_api_mainstock`.`depot_id_id`=old.`en_dep_id` AND
+			`test_api_mainstock`.`pump_type_id_id`=new.`pump_type_id_id`;
+		
+			UPDATE `test_api_transaction`
+			SET `fuel_amount`=new.`contractor_amount`,`transaction_date`=new.`enter_date`,`transaction_rate`=new.`contractor_rate`,
+				`pump_type_id_id`=new.`pump_type_id_id`,`qty`=new.`contractor_qty`,`total`=new.`contractor_amount`+new.`handling_charge`,
+				`transport_cost`=new.`handling_charge`,`invoice_no`=new.`issue_order_no`
+			WHERE `test_api_transaction`.`ref_id`=old.`contractor_id`
+			AND `test_api_transaction`.`transaction_type`='contractor_vehicle';
+		END
+
+	$$    
+
+	DELIMITER ;
+
+----Update Contractor Dis Data---
+
