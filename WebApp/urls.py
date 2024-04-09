@@ -5,15 +5,10 @@ from WebApp.views import ChangePasswordView, LogoutAllView, LogoutView, MyObtain
 
 
 urlpatterns = [
-      
-    # path('depot/', DepotDetail.as_view()),
-    # path('depot/<int:pk>/', DepotList.as_view()),
+
+
     path('user/', userDetail.as_view()),
     path('user/<int:pk>/', userList.as_view()),
-
-    # path('userun/', FulUserUn.as_view()),
-    # path('user/', UserDetail.as_view()),
-    # path('user/<int:pk>/', UserList.as_view()),
 
     path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

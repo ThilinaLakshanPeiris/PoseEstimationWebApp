@@ -1,9 +1,5 @@
 from rest_flex_fields import FlexFieldsModelViewSet, FlexFieldsModelSerializer
 from rest_framework import serializers
-# from test_api.models import Emp, Region, Depot, STCMachineDistribution, STCMachinesDistribution, User,FuelUser,\
-#     UserLevel,InsuranceCompany,VehicleCategory,VehicleDetail,IncomingFuel,FuelType,RegionDistribution,\
-#      MainStock,ClosingTable ,Requisition ,PumpMethod,Designation,Institute,Transaction,OtherDistribution,STCVehicleDistribution,Contractor,\
-#     ContractorDistribution, DefaultFuelPrice
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
@@ -11,43 +7,14 @@ from django.contrib.auth.password_validation import validate_password
 
 from WebApp.models import user
 
-# class userSuperSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         mode = User
-#         fields = ('__all__')
+
 class userSerializer(serializers.ModelSerializer):
     class Meta:
         mode = user
         fields = ('__all__')
 
-# class RegionSerializer(FlexFieldsModelSerializer):
-#     class Meta:
-#         model = Region
-#         fields = ('__all__')
-        
 
-# class DepotSerializer(FlexFieldsModelSerializer):
-#     class Meta:
-#         model = Depot
-#         fields = ('__all__')
-#         expandable_fields = {'reg': (RegionSerializer, {'source': 'region_id', 'fields': ['region_id', 'region_txt']})}
 
-# class UserLevelSerializer(FlexFieldsModelSerializer):
-#     class Meta:
-#         model = UserLevel
-#         fields = ('__all__')
-
-# class UserSerializer(FlexFieldsModelSerializer):
-#     class Meta:
-#         model = FuelUser
-#         fields = ('__all__')
-#         depth = 1
-#         #fields = (FuelUser.fuel_user_id, FuelUser.User.username)                          
-#         expandable_fields = {'region': (RegionSerializer, {'source': 'region_id', 'fields': ['region_id', 'region_txt']}),
-#                              'depot': (DepotSerializer, {'source': 'depot_id', 'fields': ['depot_id', 'depot_txt']}),
-#                              'userlevel': (UserLevelSerializer, {'source': 'level_id', 'fields': ['level_id', 'level_name']}),
-#                             }
-       
 """ 
 Extend user and autohnticatons
 
@@ -61,8 +28,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token['username'] = user.username
         return token
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
             required=True,
@@ -187,19 +152,3 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         return instance
 
-# class UpdateRequisitionSerializer(serializers.ModelSerializer):
-#     pump_qty = serializers.FloatField(required=True)
-    
-#     class Meta:
-#         model = Requisition
-#         fields = ('pump_qty', 'status')
-#         extra_kwargs = {
-#             'pump_qty': {'required': True},
-#             'status': {'required': True},
-#         }            
-
-# class DefaultFuelPriceSerializer(FlexFieldsModelSerializer):
-#     class Meta:
-#         model  = DefaultFuelPrice
-#         fields = ('__all__')  
-#         expandable_fields = {'fuel_type': (FuelTypeSerializer, {'source': 'pump_type_id', 'fields': ['pump_type_id', 'pump_text']})}
